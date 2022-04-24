@@ -35,7 +35,11 @@ include 'connect.php';
 		
 
 		<?php
-         $sql = "select * from `petition`";
+		session_start();
+		// include 'connect.php';
+
+		$id2 = $_SESSION["id"];
+         $sql = "select * from `petition` where initiator_id != " . $id2;
          $result = mysqli_query($con, $sql);
          if($result){
 

@@ -45,7 +45,7 @@ $result = mysqli_query($con,$sql);
 
 if($result) {
 
-  echo "<script>alert("Data Insertion Successful")</script>";
+  echo "<script>alert('Data Insertion Successful')</script>";
   // header('Location: http://localhost/bolaji/dist/work.php');
 
 }else{

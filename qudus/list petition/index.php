@@ -1,6 +1,7 @@
 <?php
 
 include 'connect.php';
+session_start();
 
 $id = $_GET['indexid'];
 
@@ -8,6 +9,7 @@ $id = $_GET['indexid'];
 $sql = "SELECT * FROM petition where id='$id' ";
 
 $result = mysqli_query($con,$sql);
+
 
 
 if($result){
@@ -21,31 +23,52 @@ while($row = mysqli_fetch_assoc($result)){
 
         $date =$row['date'];
         $status =$row['status'];
-
+        $idd =$row['id'];
+        $init_id =$row['initiator_id'];
 }
 }
+$sql2 = "SELECT * FROM petition_votes where petiton_id= '$idd'";
+$result2 = mysqli_query($con,$sql2);
+$num1 = mysqli_num_rows($result2);
+// print_r($result2);
 
 if(isset($_POST['submit'])){
+  $sql3 = "SELECT * FROM petition_votes where petiton_id= '$idd' and user_id=" . $_SESSION["id"];
+  $result3 = mysqli_query($con,$sql3);
 
-$sql2 = "SELECT `signatures` FROM petition where id='$id' ";
-$result2 = mysqli_query($con, $sql2);
+  if (mysqli_num_rows($result3) > 0) {
+    echo "<script>alert('You have already petitioned for this subject')</script>";
+  } else {
+    $user_id = $_SESSION["id"];
+    $petition_id = $_POST["petition_id"];
+    $sql4 = "INSERT INTO `petition_votes` ( `user_id`, `petiton_id`) VALUES ('$user_id', '$petition_id')";
+    mysqli_query($con,$sql4);
+  }
 
-while($row2 = mysqli_fetch_array($result2)){
-  $addy = $row2['signatures'];
-  $addy = $addy+1;
+  header("Location: http://localhost/qudus/list%20petition/list.php");
+  
+// print_r($result3);
 
-     $sql3 = "UPDATE petition SET signatures='$addy' where id='$id'";
+// $sql2 = "SELECT `signatures` FROM petition where id='$id' ";
+// $result2 = mysqli_query($con, $sql2);
 
-  //$sql3 = "INSERT INTO petition(signatures) value ('$addy')";
-    mysqli_query($con, $sql3);
+// while($row2 = mysqli_fetch_array($result2)){
+//   $addy = $row2['signatures'];
+//   $addy = $addy+1;
+
+//      $sql3 = "UPDATE petition SET signatures='$addy' where id='$id'";
+
+//   //$sql3 = "INSERT INTO petition(signatures) value ('$addy')";
+//     mysqli_query($con, $sql3);
 
 
 
   // $sql3 = "UPDATE petition SET signatures='$addy' where id='$id'";
   // mysqli_query($con, $sql2);
+  // echo "love";
 }
 
-}
+
 
            ?>  
            
@@ -105,9 +128,10 @@ while($row2 = mysqli_fetch_array($result2)){
   
   <div class="blog-footer">
     <ul>
-      <li class="published-date">Signatures:   <?php echo $signatures; ?></li>
+      <li class="published-date">Signatures:   <?php echo $num1; ?></li>
       <form method="post">
-      <li class="comments"><button name="submit" style="font-size:24px" onclick=autoRefresh()><i class="fa fa-plus"></i></button></li>
+      <input type="text" name="petition_id" hidden value="<?php echo $idd; ?>">
+      <li class="comments"><button name="submit" style="font-size:24px"><i class="fa fa-plus"></i></button></li>
       <!-- <li class="shares"><a href="#"><svg class="icon-star"><use xlink:href="#icon-star"></use></svg><span class="numero">3</span></a></li> -->
       <!-- <li class="comments"><button style="font-size:24px"><i class="fa fa-minus"></i></button></li> -->
      </form>
